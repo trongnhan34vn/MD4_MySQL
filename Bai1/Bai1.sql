@@ -10,3 +10,5 @@ create table teacher
     age int,
     counrty text
 )
+
+drop database studentmanagement;
