@@ -165,3 +165,15 @@ SELECT `Name` FROM (
 -- 19. Xóa thông tin điểm thi của sinh viên có điểm <5. 
 DELETE FROM StudentTest WHERE Mark < 5;
 SELECT * FROM StudentTest;
+
+
+DELIMITER $$
+CREATE TRIGGER `test_before_insert` BEFORE INSERT ON `Initial_Fees`
+FOR EACH ROW
+BEGIN
+    IF ((SELECT Activation from Portfolio WHERE idPortfolio = New.idPortfolio)=false) THEN
+        SIGNAL SQLSTATE '45000' -- Note: no semicolon
+        SET MESSAGE_TEXT = 'Disabled Thing'; -- Note the = operator
+    END IF;
+END$$   
+DELIMITER ; 
