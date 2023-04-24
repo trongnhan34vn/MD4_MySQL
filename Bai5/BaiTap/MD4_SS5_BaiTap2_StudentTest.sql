@@ -80,7 +80,88 @@ JOIN StudentTest st ON st.RN = s.RN
 JOIN Test t ON st.TestID = t.TestID
 WHERE st.Mark < 5;
 
+-- 6. Hiển thị danh sách học viên và điểm trung bình(Average) của các môn đã thi. Danh sách phải sắp xếp theo thứ tự điểm trung bình giảm dần(nếu không sắp xếp thì chỉ được ½ số điểm) như sau:  
+SELECT @rownum:= @rownum + 1 AS STT, s.`Name`, AVG(Mark) AS Mark 
+FROM (SELECT @rownum:= 0) AS STT, Student s
+JOIN StudentTest st ON st.RN = s.RN
+GROUP BY s.Name
+ORDER BY Mark DESC;
 
+-- 7. Hiển thị tên và điểm trung bình của học viên có điểm trung bình lớn nhất như sau:
+SELECT s.`Name`, AVG(Mark) AS AVGMark 
+FROM Student s
+JOIN StudentTest st ON st.RN = s.RN
+GROUP BY s.Name
+HAVING AVGMark = (
+	SELECT MAX(AVGMark) FROM (
+		SELECT s.`Name`, AVG(Mark) AS AVGMark 
+		FROM Student s
+		JOIN StudentTest st ON st.RN = s.RN
+		GROUP BY s.Name
+	) AS MAX
+);
 
+-- 8. Hiển thị điểm thi cao nhất của từng môn học. Danh sách phải được sắp xếp theo tên môn học
+SELECT @rownum:= @rownum + 1, t.`Name`, Max(Mark) AS MaxMark 
+FROM (SELECT @rownum:= 0) AS STT, StudentTest AS st 
+JOIN Test AS t ON st.TestID = t.TestID
+GROUP BY t.`Name`
+ORDER BY t.`Name`;
 
+-- 9. Hiển thị danh sách tất cả các học viên và môn học mà các học viên đó đã thi nếu học viên chưa thi môn nào thì phần tên môn học để Null 
+SELECT s.`Name` AS StudentName, t.`Name` AS TestName 
+FROM Student AS s
+LEFT JOIN StudentTest AS st ON s.RN = st.RN
+LEFT JOIN Test AS t ON t.TestID = st.TestID;
 
+-- 10. Sửa (Update) tuổi của tất cả các học viên mỗi người lên một tuổi.
+UPDATE Student
+SET Age = Age + 1;
+
+SELECT * FROM Student;
+
+-- 11. Thêm trường tên là Status có kiểu Varchar(10) vào bảng Student.
+ALTER TABLE Student
+ADD COLUMN `Status` VARCHAR(10);
+
+-- 12. Cập nhật(Update) trường Status sao cho những học viên nhỏ hơn 30 tuổi sẽ nhận giá trị ‘Young’, trường hợp còn lại nhận giá trị ‘Old’ sau đó hiển thị toàn bộ nội dung bảng Student 
+UPDATE Student
+SET `Status` = CASE
+			WHEN Age <= 30 THEN "Young"
+            WHEN Age > 30 THEN "Old"
+END;
+
+SELECT * FROM Student;
+
+-- 13. Hiển thị danh sách học viên và điểm thi, dánh sách phải sắp xếp tăng dần theo ngày thi 
+SELECT @rownum:= @rownum + 1 AS STT, s.`Name` AS StudentName, t.`Name` AS TestName, st.Mark, st.Date 
+FROM (SELECT @rownum:= 0) AS STT, Student s
+JOIN StudentTest st ON st.RN = s.RN
+JOIN Test t ON t.TestID = st.TestID
+ORDER BY st.Date;
+
+-- 14. Hiển thị các thông tin sinh viên có tên bắt đầu bằng ký tự ‘T’ và điểm thi trung bình >4.5. Thông tin bao gồm Tên sinh viên, tuổi, điểm trung bình
+SELECT s.`Name` AS StudentName, s.Age, AVG(Mark) AS AVGMark 
+FROM Student s 
+JOIN StudentTest st ON st.RN = s.RN
+GROUP BY StudentName, s.Age 
+HAVING StudentName like "T%" AND AVGMark > 4.5;
+
+-- 15. Hiển thị các thông tin sinh viên (Mã, tên, tuổi, điểm trung bình, xếp hạng). Trong đó, xếp hạng dựa vào điểm trung bình của học viên, điểm trung bình cao nhất thì xếp hạng 1.
+SELECT s.RN, s.`Name`, AVG(Mark), DENSE_RANK() OVER(ORDER BY AVG(Mark) DESC) AS `Rank`
+FROM Student s
+JOIN StudentTest st ON st.RN = s.RN
+GROUP BY s.Name, s.RN;
+
+-- 18. Xóa tất cả các môn học chưa có bất kỳ sinh viên nào thi
+DELETE FROM Test WHERE `Name` NOT IN (
+SELECT `Name` FROM (
+	SELECT t.`Name` 
+	FROM Test AS t 
+	JOIN StudentTest st ON st.TestID = t.TestID
+	) AS c
+);
+
+-- 19. Xóa thông tin điểm thi của sinh viên có điểm <5. 
+DELETE FROM StudentTest WHERE Mark < 5;
+SELECT * FROM StudentTest;
