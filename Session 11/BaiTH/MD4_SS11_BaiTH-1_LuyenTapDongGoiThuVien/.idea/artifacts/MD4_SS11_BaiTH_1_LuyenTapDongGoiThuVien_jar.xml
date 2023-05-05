@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="MD4_SS11_BaiTH-1_LuyenTapDongGoiThuVien:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/MD4_SS11_BaiTH_1_LuyenTapDongGoiThuVien_jar</output-path>
+    <root id="archive" name="MD4_SS11_BaiTH-1_LuyenTapDongGoiThuVien.jar">
+      <element id="module-output" name="MD4_SS11_BaiTH-1_LuyenTapDongGoiThuVien" />
+    </root>
+  </artifact>
+</component>
