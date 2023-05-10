@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+<h3>Song Management</h3>
+<p>
+  <a th:href="@{/song/create}">
+    Add new song
+  </a>
+</p>
+<table id = "products">
+  <thead>
+  <tr>
+    <th>Name</th>
+    <th>Artist</th>
+    <th>Category</th>
+    <th>Audio</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="song : ${listSongs}">
+    <td th:text="${song.name}"></td>
+    <td th:text="${song.artist}"></td>
+    <td th:text="${song.category}"></td>
+    <td><audio controls th:src="@{'/audio/' + ${song.getUrl()}}"></audio></td>
+  </tr>
+  </tbody>
+</table>
+</body>
+</html>
